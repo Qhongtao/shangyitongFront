@@ -17,7 +17,7 @@ export default {
     },
     save(searchObj) {
         return request({
-            url: `${api_name}`/saveHospitalSet,
+            url: `${api_name}/saveHospitalSet`,
             method:'post',
             data:searchObj
         })
