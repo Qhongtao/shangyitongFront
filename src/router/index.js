@@ -51,32 +51,40 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '预约挂号平台后台管理', icon: 'dashboard' }
     }]
   },
 
+  //医院设置管理
   {
-    path: '/example',
+    path: '/yygh/hospset',
     component: Layout,
-    redirect: '/example/table',
+    redirect: '/yygh/hospset/list',  //简单的重定向 首页
     name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
+    meta: { title: '医院管理', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'list',
+        name: 'HospSetList',
+        component: () => import('@/views/yygh/hospset/list'),
+        meta: { title: '医院设置列表', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        path: 'create',
+        name: 'HospSetCreate',
+        component: () => import('@/views/yygh/hospset/form'),
+        meta: { title: '添加医院设置', icon: 'tree' }
+      },
+      {
+        path: 'edit/:id',
+        name: 'HospSetEdit',
+        component: () => import('@/views/yygh/hospset/form'),
+        meta: { title: '编辑医院设置', noCache: true },
+        hidden: true
       }
     ]
   },
-
+    {path: '*', redirect: '/404', hidden: true},
   {
     path: '/form',
     component: Layout,
