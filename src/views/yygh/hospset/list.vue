@@ -3,16 +3,11 @@
         <el-form :inline="true" class="demo-form-inline">
         <el-form-item>
             <el-input
-                placeholder="医院名称"
-                v-model="input"
-                clearable>
+                placeholder="医院名称" v-model="searchObj.hosname" clearable>
             </el-input>
         </el-form-item>
         <el-form-item>
-            <el-input
-                placeholder="医院编号"
-                v-model="input"
-                clearable>
+            <el-input placeholder="医院编号" v-model="searchObj.hoscode" clearable>
             </el-input>
         </el-form-item>
             <el-button type="primary" icon="el-icon-search" @click="fetchData()">查询</el-button>
@@ -48,6 +43,20 @@
     <el-table-column
       prop="contactsPhone"
       label="电话">
+    </el-table-column>
+    <el-table-column prop="status" label="状态">
+        <template slot-scope="scope">
+            {{ scope.row.status===1?'可用':'不可用' }}
+        </template>
+    </el-table-column>
+
+    <el-table-column label="操作" width="200" align="center">
+        <template slot-scope="scope">
+            <router-link :to="'/yygh/hospset/edit/'+scope.row.id">
+                <el-button type="primary" size="mini" icon="el-icon-edit">修改</el-button>
+            </router-link>
+            <el-button type="danger" size="mini" icon="el-icon-delete" @click="removeById(scope.row.id)">删除</el-button>
+        </template>
     </el-table-column>
     <!-- <el-table-column
       prop="createTime"
@@ -119,6 +128,49 @@ export default({
         }
         return '';
       },
-    }
-})
-</script>
+      removeById(id){
+        const h = this.$createElement;
+        this.$msgbox({
+          title: '注意',
+          message: h('p', null, [
+            h('span', null, '是否删除 '),
+         //   h('i', { style: 'color: teal' }, 'VNode')
+          ]),
+          showCancelButton: true,
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          beforeClose: (action, instance, done) => {
+            if (action === 'confirm') {
+              instance.confirmButtonLoading = true,
+              hospset.removeById(id)
+              instance.confirmButtonLoading = false;
+              done();
+            } else {
+              instance.confirmButtonLoading = false;
+              done();
+            }
+          }
+        }).then(action  => {
+          this.fetchData()
+          this.$message({
+            type: 'success',
+            message: '删除成功' 
+          })
+          hospset.getList(1)
+        }).catch((action)=>{
+            if(action === 'cancel'){
+              this.$message({
+                type: 'info',
+                message: '已取消删除'
+              })
+            }else{
+              this.$message({
+                type: 'error',
+                message: '删除失败'
+            })
+            }
+          });
+      }
+      }
+  })
+  </script>

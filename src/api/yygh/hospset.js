@@ -8,6 +8,19 @@ export default {
             method: 'post',
             data: searchObj
         })
+    },
+    removeById(id) {
+        return request({
+            url: `${api_name}/${id}`,
+            method:'delete',
+        })
+    },
+    save(searchObj) {
+        return request({
+            url: `${api_name}`/saveHospitalSet,
+            method:'post',
+            data:searchObj
+        })
     }
 }
 
