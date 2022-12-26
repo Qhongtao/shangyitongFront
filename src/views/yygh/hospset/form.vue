@@ -2,6 +2,8 @@
   <div class="app-container">医院设置表单
     <!-- <el-radio-group v-model="labelPosition" size="small">
   <el-radio-button label="left">左对齐</el-radio-button>
+
+
 <el-radio-button label="right">右对齐</el-radio-button>
   <el-radio-button label="top">顶部对齐</el-radio-button> -->
 <!-- </el-radio-group> --> 
@@ -30,6 +32,7 @@
 
 <script>
 import hospset from '@/api/yygh/hospset';
+import Axios from 'axios';
   export default {
     data() {
       return {
@@ -54,7 +57,7 @@ import hospset from '@/api/yygh/hospset';
             message:"添加成功"
           })
           //跳转页面  
-          this.$router.push({path:'/hospset/list'})
+          this.$router.push({path:'/yygh/hospset/list'})
         })
       }
    }

@@ -55,7 +55,7 @@
             <router-link :to="'/yygh/hospset/edit/'+scope.row.id">
                 <el-button type="primary" size="mini" icon="el-icon-edit">修改</el-button>
             </router-link>
-            <el-button type="danger" size="mini" icon="el-icon-delete" @click="removeById(scope.row.id)">删除</el-button>
+            <el-button type="danger" size="mini" icon="el-icon-delete" @click="deleteremoveById(scope.row.id)">删除</el-button>
         </template>
     </el-table-column>
     <!-- <el-table-column
@@ -67,13 +67,14 @@
       label="更新时间">
     </el-table-column> -->
   </el-table>
-
     <el-pagination 
-    :page-size="20"
+    :page-size="limit"
     :pager-count="11"
     layout="prev, pager, next"
-    :total="total">
-    </el-pagination>
+    :total="total"
+    @current-change="fetchData"
+    />
+    <!-- </el-pagination> -->
   </div>
 </template>
 <style>
@@ -99,7 +100,7 @@ export default({
             listLoading: true, // 是否显示loading信息
             list: [], // 数据列表
             total: 0, // 总记录数
-            page: 1, // 页码
+            current: 1, // 页码
             limit: 10, // 每页记录数
             searchObj: {}// 查询条件
         }
@@ -110,14 +111,12 @@ export default({
     methods: {
         fetchData(page = 1){ // 调用api层获取数据库中的数据
             console.log('加载列表')
-            this.page = page
+            this.current = page
             this.listLoading = true
-            hospset.getPageList(this.page,this.limit,this.searchObj).then(response =>{
-                if(response.success == true){
+            hospset.getPageList(this.current,this.limit,this.searchObj).then(response =>{
                     this.list = response.data.rows
                     this.total = response.data.total
-                }
-                this.listLoading = false
+                    this.listLoading = false
             })
         },
         tableRowClassName({row, rowIndex}) {
@@ -128,48 +127,46 @@ export default({
         }
         return '';
       },
-      removeById(id){
+      deleteremoveById(id){
         const h = this.$createElement;
+        console.log(id)
         this.$msgbox({
-          title: '注意',
+          title: '消息',
           message: h('p', null, [
-            h('span', null, '是否删除 '),
-         //   h('i', { style: 'color: teal' }, 'VNode')
+            h('span', null, '确认删除吗？ '),
+            // h('i', { style: 'color: teal' }, 'VNode')
           ]),
           showCancelButton: true,
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           beforeClose: (action, instance, done) => {
             if (action === 'confirm') {
-              instance.confirmButtonLoading = true,
-              hospset.removeById(id)
-              instance.confirmButtonLoading = false;
-              done();
+              instance.confirmButtonLoading = true;
+              instance.confirmButtonText = '执行中...';
+              setTimeout(() => {
+                instance.confirmButtonLoading = false;
+                done();
+              }, 300);
             } else {
-              instance.confirmButtonLoading = false;
               done();
             }
           }
-        }).then(action  => {
-          this.fetchData()
-          this.$message({
-            type: 'success',
-            message: '删除成功' 
-          })
-          hospset.getList(1)
-        }).catch((action)=>{
-            if(action === 'cancel'){
-              this.$message({
-                type: 'info',
-                message: '已取消删除'
-              })
-            }else{
-              this.$message({
-                type: 'error',
-                message: '删除失败'
-            })
-            }
-          });
+        }).then(action => {
+          hospset.removeById(id) .then(response => {
+                  //提示
+                  this.$message({
+                     type: 'success',
+                     message: '删除成功!'
+                  })
+                  //刷新页面
+                  this.fetchData(1)
+               })
+        }).catch(() => {
+                this.$message({
+                  type:'info',
+                  message:'已取消删除'
+                })
+               })
       }
       }
   })
